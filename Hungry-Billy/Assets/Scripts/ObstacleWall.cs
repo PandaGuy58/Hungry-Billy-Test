@@ -8,8 +8,8 @@ public class ObstacleWall : MonoBehaviour
     public ObstacleGeneration obstacleGeneration;
 
 
-    public void InitialiseWall(ObstacleGeneration obstacleGeneration)
-    {
+    public void InitialiseWall(ObstacleGeneration obstacleGeneration)       // get reference to generation 
+    {                                                                           // allows the object to be reused in generation
         this.obstacleGeneration = obstacleGeneration;
 
         for (int i = 0; i < cubes.Count; i++)
@@ -18,8 +18,8 @@ public class ObstacleWall : MonoBehaviour
         }
     }
 
-    public void InitialiseCubes(int disabledCubes, Color cubeColor)
-    {
+    public void InitialiseCubes(int disabledCubes, Color cubeColor)         // initialise the wall for gameplay 
+    {                                                                       // > disable cubes + change colour
         List<ObstacleCube> tempCubes = new (cubes);
         for(int i = 0; i < cubes.Count; i++)
         {
@@ -29,16 +29,15 @@ public class ObstacleWall : MonoBehaviour
         
         for(int i = 0; i < disabledCubes; i++)
         {
-            int targetIndex = Random.Range(0, tempCubes.Count);
+            int targetIndex = Random.Range(0, tempCubes.Count);         // pick locations at random
             tempCubes[targetIndex].gameObject.SetActive(false);
             tempCubes.RemoveAt(targetIndex);
         }
 
     }
 
-
-    private void OnTriggerExit(Collider other)
-    {
+    private void OnTriggerExit(Collider other)          // once player passes through wall
+    {                                                       // reuse for gameplay
         if(other.CompareTag("Player"))
         {
             obstacleGeneration.SpawnNextWall(this);

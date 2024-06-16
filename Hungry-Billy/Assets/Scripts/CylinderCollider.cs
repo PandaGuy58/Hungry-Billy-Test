@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class CylinderCollider : MonoBehaviour
 {
-    public PlayerController playerController;
+    public PlayerController playerController;      // code dedicated to determine collision enter of the model
     bool damageTaken = false;
 
-    private void OnTriggerEnter(Collider other)
-    {
-        if(other.CompareTag("Obstacle"))
+    private void OnTriggerEnter(Collider other)    // upon collision enter and exit  
+    {                                               // >  player script is updated with gathered data
+        if (other.CompareTag("Obstacle"))
         {
             playerController.HealthDecrement();
             damageTaken = true;
@@ -23,9 +23,9 @@ public class CylinderCollider : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("ObstacleWall"))
+        if (other.CompareTag("ObstacleWall"))           
         {
-            playerController.moveAllowed = true;
+            playerController.moveAllowed = true;        // upon entering the wall > player movement disabled
             playerController.WallIncrement();
 
             if(damageTaken)
@@ -34,7 +34,7 @@ public class CylinderCollider : MonoBehaviour
             }
             else
             {
-                playerController.PointIncrement();
+                playerController.PointIncrement();          // if no collision with obstacle  >  add points
             }
         }
     }

@@ -4,14 +4,14 @@ using UnityEngine;
 
 public class PlayerModelController : MonoBehaviour
 {
-    public int currentHorizontalRotation = 0;
+    public int currentHorizontalRotation = 0;       // horizontal rotation variables
     float currentHorizontalAngle = 0;
     float currentHorizontalAngleTwo = 0;
 
-    public int currentForwardRotation = 0;
+    public int currentForwardRotation = 0;          // forward rotation variables
     float currentForwardAngle = 0;
 
-    float maxHorizontalRotateValue = 30;
+    float maxHorizontalRotateValue = 30;            // max rotation allowed
     float maxHorizontalRotateValueTwo = 90;
     float maxForwardRotateValue = 40;
 
@@ -24,7 +24,7 @@ public class PlayerModelController : MonoBehaviour
 
     void HorizontalRotation()
     {
-        if(currentHorizontalRotation == 1)
+        if(currentHorizontalRotation == 1)              // horizontal lerp rotations of the model
         {
             currentHorizontalAngle = Mathf.Lerp(currentHorizontalAngle, maxHorizontalRotateValue, Time.deltaTime * 3);
             currentHorizontalAngleTwo = Mathf.Lerp(currentHorizontalAngleTwo, -maxHorizontalRotateValueTwo, Time.deltaTime * 4);
@@ -41,7 +41,7 @@ public class PlayerModelController : MonoBehaviour
         }
     }
 
-    void ForwardRotation()
+    void ForwardRotation()                              // forward lerp rotations of the model
     {
         if (currentForwardRotation == 1)
         {
@@ -58,7 +58,7 @@ public class PlayerModelController : MonoBehaviour
 
     }
 
-    void ApplyRotation()
+    void ApplyRotation()                // apply calculated rotations to transform
     {
         Vector3 calculateRotation = Vector3.zero;
         calculateRotation.y = currentHorizontalAngle;

@@ -6,29 +6,29 @@ using TMPro;
 using UnityEngine.SceneManagement;
 public class PlayerController : MonoBehaviour
 {
-    public List<Image> healthImages;
+    public List<Image> healthImages;            // UI in the scene
     public TMP_Text scoreText;
     public TMP_Text difficultyText;
     public TMP_Text gameOverText;
     public TMP_Text spaceRestartText;
 
-    public Vector2 targetLocation = new Vector2(-0.5f, -0.5f);
+    public Vector2 targetLocation = new Vector2(-0.5f, -0.5f);  // targetLocation of RB (updated through inputs)
     Rigidbody rb;
 
-    float forwardVelocity = 7.5f;
-    float horizontalVerticalVelocity = 5;
+    float forwardVelocity = 7.5f;               //initial forward velocity (updated upon next difficulties)
+    float horizontalVerticalVelocity = 5;           // how fast rb moves side and up/down
 
-    public bool moveAllowed = true;
+    public bool moveAllowed = true;                 // movement disabled/enabled
 
-    int totalPoints = 0;
+    int totalPoints = 0;                            // essential game data
     int totalWallsPassed = 0;
 
-    public PlayerModelController playerModelController;
+    public PlayerModelController playerModelController;     // allows to instruct rotations
 
-    public ObstacleGeneration obstacleGeneration;
+    public ObstacleGeneration obstacleGeneration;           // allows to determine current difficulty
 
     bool gameOver = false;
-
+    bool maxDifficulty = false;
   //  public Vector3 targetVelocity;
     void Start()
     {
@@ -45,7 +45,11 @@ public class PlayerController : MonoBehaviour
 
         if(gameOver)
         {
-            SceneManager.LoadScene(1);
+            if(Input.GetKeyDown(KeyCode.Space))
+            {
+                SceneManager.LoadScene(1);
+            }
+            
         }
 
     }
@@ -63,16 +67,16 @@ public class PlayerController : MonoBehaviour
         
     }
 
-    void Inputs()
+    void Inputs()                           // player inputs  >  entering updates the target location of rigidbody
     {
         if (Input.GetKeyDown(KeyCode.A))
         {
-            if (targetLocation.x != -1.5f)
+            if (targetLocation.x != -1.5f)      // increment/decrement value by 1
             {
-                targetLocation.x -= 1;
+                targetLocation.x -= 1;              // prevent forbidden values
             }
         }
-        else if (Input.GetKeyDown(KeyCode.D))
+        else if (Input.GetKeyDown(KeyCode.D))           // and so on...
         {
             if (targetLocation.x != 1.5f)
             {
@@ -99,14 +103,14 @@ public class PlayerController : MonoBehaviour
     void CalculateVelocity()
     {
         Vector3 targetVelocity = Vector3.zero;
-        Vector2 currentLocation = transform.position;
-
-        if (currentLocation.x > targetLocation.x + 0.1f || currentLocation.x < targetLocation.x - 0.1f)
+        Vector2 currentLocation = transform.position;       // check if value is close to the destination 
+                                                                    // prevents jittery movement of the player transform
+        if (currentLocation.x > targetLocation.x + 0.1f || currentLocation.x < targetLocation.x - 0.1f)   
         {
             if (currentLocation.x > targetLocation.x)
             {
-                targetVelocity.x = -1;
-                playerModelController.currentHorizontalRotation = -1;
+                targetVelocity.x = -1;                                    // depending on the direction of rb
+                playerModelController.currentHorizontalRotation = -1;        // > instruct the model to rotate in different directions
             }
             else
             {
@@ -116,10 +120,10 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            playerModelController.currentHorizontalRotation = 0;
+            playerModelController.currentHorizontalRotation = 0;            // if location is met  >  neutralise rotation
         }
 
-        if (currentLocation.y > targetLocation.y + 0.1f || currentLocation.y < targetLocation.y - 0.1f)
+        if (currentLocation.y > targetLocation.y + 0.1f || currentLocation.y < targetLocation.y - 0.1f)     // and so on...
         {
             if (currentLocation.y > targetLocation.y)
             {
@@ -137,20 +141,20 @@ public class PlayerController : MonoBehaviour
             playerModelController.currentForwardRotation = 0;
         }
 
-        targetVelocity = Vector3.Normalize(targetVelocity);
+        targetVelocity = Vector3.Normalize(targetVelocity);     // normalise the direction if moving in 2 directions
         targetVelocity *= horizontalVerticalVelocity;
 
 
-        targetVelocity.z = forwardVelocity;
+        targetVelocity.z = forwardVelocity;                         // enable forward movement of rb
         rb.velocity = targetVelocity;
     }
 
-    public void HealthDecrement()
+    public void HealthDecrement()                   // dedicated to updating player's health
     {
-        healthImages[healthImages.Count-1].gameObject.SetActive(false);
+        healthImages[healthImages.Count-1].gameObject.SetActive(false);     // update image list
         healthImages.RemoveAt(healthImages.Count-1);
 
-        if(healthImages.Count == 0)
+        if(healthImages.Count == 0)              // if image list == 0  >  game over
         {
             moveAllowed = false;
             gameOver = true;
@@ -159,20 +163,25 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    public void PointIncrement()
+    public void PointIncrement()            // update score
     {
         totalPoints += 1;
         scoreText.text = "Score: " + totalPoints;
     }
 
-    public void WallIncrement()
+    public void WallIncrement()         // upon passing through walls  >  update data
     {
         totalWallsPassed += 1;
-        if(totalWallsPassed == obstacleGeneration.wallsPerDifficulty && obstacleGeneration.currentDifficulty < 6) 
-        {
+        if(totalWallsPassed == obstacleGeneration.wallsPerDifficulty && !maxDifficulty)   // upon reaching next difficulty
+        {                                                                                   // update speed of rb
             totalWallsPassed = 0;
             difficultyText.text = "Difficulty: " + obstacleGeneration.currentDifficulty.ToString();
             forwardVelocity += 0.7f;
+
+            if(obstacleGeneration.currentDifficulty == 5)       // prevent speed increasing forever
+            {
+                maxDifficulty = true;
+            }
         }
     }
 }

@@ -4,14 +4,11 @@ using UnityEngine;
 
 public class ObstacleCube : MonoBehaviour
 {
-    MeshRenderer meshRend;
-    // Start is called before the first frame update
+    MeshRenderer meshRend;  
     public void Initialise()
     {
         meshRend = GetComponent<MeshRenderer>();
     }
-
-    // Update is called once per frame
 
     public void InitialiseColour(Color targetColour)
     {
